@@ -1,9 +1,11 @@
 const express = require("express");
 const router = express.Router();
 const db = require("../models");
+const { authenticateUser, authorizeRole } = require("../middleware/auth"); // Middleware untuk otentikasi dan otorisasi
 
 // GET all products
-router.get("/", async (req, res) => {
+router.get("/", authenticateUser, async (req, res) => {
+  // Hanya pengguna yang terotentikasi yang dapat mengakses
   try {
     const products = await db.Product.findAll();
     res.json(products);
@@ -13,7 +15,8 @@ router.get("/", async (req, res) => {
 });
 
 // POST create a new product
-router.post("/", async (req, res) => {
+router.post("/", authenticateUser, authorizeRole("admin"), async (req, res) => {
+  // Hanya pengguna dengan peran "admin" yang dapat membuat produk baru
   try {
     const product = await db.Product.create(req.body);
     res.status(201).json(product);
@@ -23,7 +26,8 @@ router.post("/", async (req, res) => {
 });
 
 // PUT update a product by ID
-router.put("/:id", async (req, res) => {
+router.put("/:id", authenticateUser, authorizeRole("admin"), async (req, res) => {
+  // Hanya pengguna dengan peran "admin" yang dapat memperbarui produk
   try {
     const product = await db.Product.findByPk(req.params.id);
     if (!product) {
@@ -37,7 +41,8 @@ router.put("/:id", async (req, res) => {
 });
 
 // DELETE a product by ID
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", authenticateUser, authorizeRole("admin"), async (req, res) => {
+  // Hanya pengguna dengan peran "admin" yang dapat menghapus produk
   try {
     const product = await db.Product.findByPk(req.params.id);
     if (!product) {

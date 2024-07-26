@@ -7,11 +7,19 @@ const db = require("../models");
 // Rute registrasi
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
-  const hashedPassword = await bcrypt.hash(password, 10);
+
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ message: "Username and password are required" });
+  }
+
   try {
-    const user = await db.User.create({ username, password: hashedPassword });
-    res.json({ message: "User registered successfully" });
+    const hashedPassword = await bcrypt.hash(password, 10);
+    await db.User.create({ username, password: hashedPassword });
+    res.status(201).json({ message: "User registered successfully" });
   } catch (error) {
+    console.error("Error registering user:", error);
     res.status(500).json({ message: "Error registering user" });
   }
 });
@@ -19,21 +27,29 @@ router.post("/register", async (req, res) => {
 // Rute login
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
-  const user = await db.User.findOne({ where: { username } });
-  if (user) {
-    const isMatch = await bcrypt.compare(password, user.password);
-    if (isMatch) {
+
+  if (!username || !password) {
+    return res
+      .status(400)
+      .json({ message: "Username and password are required" });
+  }
+
+  try {
+    const user = await db.User.findOne({ where: { username } });
+
+    if (user && (await bcrypt.compare(password, user.password))) {
       const accessToken = jwt.sign(
-        { username: user.username },
+        { username: user.username, id: user.id },
         process.env.JWT_SECRET,
         { expiresIn: "1h" }
       );
       res.json({ accessToken });
     } else {
-      res.status(401).json({ message: "Password incorrect" });
+      res.status(401).json({ message: "Invalid username or password" });
     }
-  } else {
-    res.status(401).json({ message: "User not found" });
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Error during login" });
   }
 });
 

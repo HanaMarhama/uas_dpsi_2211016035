@@ -2,7 +2,8 @@ const jwt = require("jsonwebtoken");
 
 module.exports = (req, res, next) => {
   // Extract token from Authorization header
-  const token = req.headers["authorization"];
+  const authHeader = req.headers["authorization"];
+  const token = authHeader && authHeader.split(" ")[1]; // Extract token
 
   // Check if token exists
   if (!token) {
@@ -11,7 +12,7 @@ module.exports = (req, res, next) => {
 
   try {
     // Verify and decode token
-    const decoded = jwt.verify(token.split(" ")[1], process.env.JWT_SECRET);
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     // Attach decoded user ID to req object
     req.userId = decoded.id;

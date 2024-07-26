@@ -20,8 +20,10 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      timestamps: true,
+      timestamps: true, // Adds createdAt and updatedAt fields
+      tableName: "Products", // Optional: Specify the table name explicitly
     }
   );
+
   return Product;
 };

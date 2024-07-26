@@ -1,4 +1,4 @@
-const bcrypt = require("bcrypt");
+const bcryptjs = require("bcryptjs");
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define(
@@ -32,14 +32,14 @@ module.exports = (sequelize, DataTypes) => {
   // Hook to hash password before saving to database
   User.beforeCreate(async (user) => {
     if (user.changed("password")) {
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(user.password, salt);
+      const salt = await bcryptjs.genSalt(10);
+      user.password = await bcryptjs.hash(user.password, salt);
     }
   });
 
   // Method to compare password for authentication
   User.prototype.comparePassword = async function (password) {
-    return bcrypt.compare(password, this.password);
+    return bcryptjs.compare(password, this.password);
   };
 
   return User;

@@ -4,7 +4,6 @@ module.exports = (sequelize, DataTypes) => {
     {
       date: {
         type: DataTypes.DATE,
-        allowNull: false, // Add this if date must be provided
       },
       totalAmount: {
         type: DataTypes.DECIMAL(10, 2),
@@ -20,10 +19,8 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      timestamps: true, // Automatically add createdAt and updatedAt fields
-      tableName: "Transactions", // Optional: Specify the table name explicitly
+      timestamps: true,
     }
   );
-
   return Transaction;
 };

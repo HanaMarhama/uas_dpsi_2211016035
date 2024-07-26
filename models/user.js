@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notEmpty: true,
-          len: [1, 255], // Limit length of the username
+          len: [1, 255], // Optional: limit length
         },
       },
       password: {
@@ -18,18 +18,18 @@ module.exports = (sequelize, DataTypes) => {
         allowNull: false,
         validate: {
           notEmpty: true,
-          len: [6, 255], // Ensure password length is between 6 and 255 characters
+          len: [6, 255], // Optional: ensure password is of minimum length
         },
       },
     },
     {
-      timestamps: true, // Automatically adds createdAt and updatedAt fields
-      tableName: "Users", // Explicitly set table name
-      underscored: true, // Use snake_case for column names
+      timestamps: true, // Adds createdAt and updatedAt columns
+      tableName: "Users", // Optional: specify table name
+      underscored: true, // Optional: use snake_case for columns
     }
   );
 
-  // Hook to hash password before saving to the database
+  // Hook to hash password before saving to database
   User.beforeCreate(async (user) => {
     if (user.changed("password")) {
       const salt = await bcrypt.genSalt(10);

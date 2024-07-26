@@ -2,14 +2,13 @@ const { Sequelize, DataTypes } = require("sequelize");
 const config = require("../config");
 const sequelize = new Sequelize(config.development);
 
-// Initialize an empty object to hold the models
 const db = {};
 
 // Assign Sequelize and sequelize instance to db
 db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
-// Import models and initialize them
+// Import models
 db.User = require("./user")(sequelize, DataTypes);
 db.Product = require("./product")(sequelize, DataTypes);
 db.Transaction = require("./transaction")(sequelize, DataTypes);
@@ -25,16 +24,13 @@ db.Product.belongsToMany(db.Transaction, { through: db.TransactionItem });
 
 const syncDatabase = async () => {
   try {
-    // Use { alter: true } to update schema without dropping tables
-    // Use { force: true } only if you want to drop and recreate tables
-    await sequelize.sync({ alter: true });
+    await sequelize.sync({ alter: true }); // Use { force: true } to drop and recreate tables if needed
     console.log("Database synchronized successfully");
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
 };
 
-// Call the sync function to synchronize the database
 syncDatabase();
 
 module.exports = db;

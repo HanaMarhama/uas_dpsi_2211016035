@@ -12,10 +12,8 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      timestamps: true, // Automatically add createdAt and updatedAt fields
-      tableName: "TransactionItems", // Optional: Specify the table name explicitly
+      timestamps: true,
     }
   );
-
   return TransactionItem;
 };
